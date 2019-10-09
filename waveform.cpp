@@ -6,24 +6,36 @@
 
 using namespace std;
 
+
+//Standard waveform creator from histogram. 
+//It allocates amplitude and time arrays with size fNsample given by the number of bin from original histogram. 
+//It fills amplitude array. 
+//It does NOT fill time array
+//For a complete waveform definition should call SetTime after this
 waveform::waveform(const TH1 *h){
 
   fNsample = ((TH1*)h)->GetXaxis()->GetNbins();
   fAmp = new Double_t[fNsample];
+  fTime = new Double_t[fNsample];
+  
+  for(Int_t iSample=0; iSample<fNsample; iSample++){
 
-  Int_t iPnt;
-  for(iPnt=0; iPnt<fNsample; iPnt++){
+    fAmp[iSample] = h->GetBinContent(iSample+1);
 
-    fAmp[iPnt] = h->GetBinContent(iPnt+1);
-    //cout << "ampiezza del bin " << iPnt << " " << fAmp[iPnt] << endl;
   }
 }
 
+//Set time range for waveform.
+//It fills time array.
 void waveform::SetTime(Double_t tmin, Double_t tmax){
 
   fTimeMin = tmin;
   fTimeMax = tmax;
   fSamplingInterval = (tmax-tmin)/(fNsample - 1);
+  for(Int_t iSample = 0; iSample < fNsample; iSample++){
+    
+    fTime[iSample] = fSamplingInterval * iSample;
+  }
 }
 
 Double_t waveform::GetTimeAt(Int_t sample){
