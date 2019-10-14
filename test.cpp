@@ -67,6 +67,9 @@ int main(int n, char* argv[]) {
     Int_t bin;
     cout << "bin del tempo 0.6: " << wfm[wfm_id]->FindBin(-6e-5) << endl;
 
+    Double_t baseline =0.;
+    baseline = wfm[wfm_id]->CalculateBaselineBin(0,40);
+    cout << "baseline :" << baseline << endl;
     /*
     for(Int_t sample = 0; sample < npoints; sample++){
 

@@ -65,3 +65,21 @@ Int_t waveform::FindBin(Double_t time){
   return bin;
 
 }
+
+//-------------------------------------------------------------------------------------------------------------//
+
+//Return baseline calculated from bin start_bin to bin end_bin
+Double_t waveform::CalculateBaselineBin(Double_t start_bin, Double_t end_bin){
+
+  Double_t baseline = 0.;
+  Int_t n_bin = end_bin - start_bin;
+  if(n_bin < 0) return 0;
+  for(Int_t i_bin = 0; i_bin < n_bin; i_bin++){
+
+    baseline += fAmp[i_bin];
+
+  }
+
+  baseline /= n_bin;
+  return baseline;
+}
