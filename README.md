@@ -3,27 +3,27 @@
 
 compilare con
 
-g++ DAQ.cpp `root-config --cflags --glibs` -o DAQ
-
-g++ ANAL.cpp waveform.cpp `root-config --cflags --glibs` -o ANAL
+g++ test.cpp waveform.cpp `root-config --cflags --glibs` -o test
 
 esecuzione:
 
-ls *dat >> out.dat
-
-./DAQ out.dat out.root
-
-./ANAL out.root demo.root
-
+./ANAL ThXXX.root output.root
 
 DA IMPLEMENTARE:
 
-Integrale della funzione esponenziale fittata
+- variabili implementate in versione precedente: 
+  - baseline
+  - baseline rms
+  - integrale
+  - amplitude
+  - get max
+  - get min
+  - template
+  - fit
+  - integrale del fit
+  - convolution / filtering
+  - macro per analisi generica
+  - macro per visualizzazione
+  - saturazione
+  - FFT?
 
-Trasformata di Fourier
-
-Riconoscimento impulsi
-
-Pile up
-
-Eventi saturati
