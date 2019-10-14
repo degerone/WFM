@@ -54,7 +54,7 @@ int main(int n, char* argv[]) {
 
   for(Int_t wfm_id=0; wfm_id<n_wfm; wfm_id++){
 
-    wfm[wfm_id]->SetTime(0.,wfm_id);
+    wfm[wfm_id]->SetTime((-wfm_id * 1e-5),0.);
   }
  
   for(Int_t wfm_id=0; wfm_id<n_wfm; wfm_id++){
@@ -63,11 +63,19 @@ int main(int n, char* argv[]) {
     cout << "t min della wfm_id " << wfm_id << "  " <<  wfm[wfm_id]->GetTimeMin() << endl;
     cout << "t max della wfm_id " << wfm_id << "  " <<  wfm[wfm_id]->GetTimeMax() << endl;
     Int_t npoints = wfm[wfm_id]->GetNsample();
+
+    Int_t bin;
+    cout << "bin del tempo 0.6: " << wfm[wfm_id]->FindBin(-6e-5) << endl;
+
+    /*
     for(Int_t sample = 0; sample < npoints; sample++){
 
       cout << "tempo del sample " << sample << " della wfm " << wfm_id << " :" << time[sample] << endl;
 
     }
+    */
+
+
   }
 
 

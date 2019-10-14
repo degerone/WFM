@@ -22,5 +22,6 @@ class waveform {
   Double_t GetTimeMin() const{return fTimeMin;}
   Double_t GetTimeMax() const{return fTimeMax;}
   Double_t GetTimeAt(Int_t sample);
+  Int_t FindBin(Double_t time);
 
 };

@@ -25,6 +25,8 @@ waveform::waveform(const TH1 *h){
   }
 }
 
+//-------------------------------------------------------------------------------------------------------------//
+
 //Set time range for waveform.
 //It fills time array.
 void waveform::SetTime(Double_t tmin, Double_t tmax){
@@ -38,12 +40,28 @@ void waveform::SetTime(Double_t tmin, Double_t tmax){
   }
 }
 
+//-------------------------------------------------------------------------------------------------------------//
+
+//Return time of sample
+//If sample is lower (greater) than 0 (fNsample) returns -1e5 (1e5)
 Double_t waveform::GetTimeAt(Int_t sample){
 
-  
   if(sample < 0) return -1e5;
   if(sample >= fNsample) return 1e5;
   Double_t time = fTimeMin + sample*fSamplingInterval;
   return time;
+
+}
+
+//-------------------------------------------------------------------------------------------------------------//
+
+//Return bin number containing time 
+Int_t waveform::FindBin(Double_t time){
+
+  Int_t bin;
+  if(time < fTimeMin) bin = -1;
+  else if (time > fTimeMax) bin = fNsample - 1;
+  else bin = static_cast<int>((fNsample - 1) * (time - fTimeMin) / (fTimeMax - fTimeMin));
+  return bin;
 
 }
