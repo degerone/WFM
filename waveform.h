@@ -24,5 +24,6 @@ class waveform {
   Double_t GetTimeAt(Int_t sample);
   Int_t FindBin(Double_t time);
   Double_t CalculateBaselineBin(Double_t start_bin, Double_t end_bin);
+  Double_t CalculateBaseline(Double_t t_start, Double_t t_end);
 
 };

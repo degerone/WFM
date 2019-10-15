@@ -69,7 +69,17 @@ int main(int n, char* argv[]) {
 
     Double_t baseline =0.;
     baseline = wfm[wfm_id]->CalculateBaselineBin(0,40);
-    cout << "baseline :" << baseline << endl;
+    //    cout << "baseline :" << baseline << endl;
+    Double_t baseline_time = 0.;
+    Double_t start_time = (-wfm_id * 1e-5);
+    Double_t end_time = (-wfm_id * 1e-5)+((wfm_id * 1e-5)*40/398); //fNSample (399) - 1??
+    Int_t check_bin_start = wfm[wfm_id]->FindBin(start_time);
+    Int_t check_bin_end = wfm[wfm_id]->FindBin(end_time);
+
+    baseline_time = wfm[wfm_id]->CalculateBaseline(start_time, end_time);
+    cout << "bin check start : " << check_bin_start << " check bin end : " << check_bin_end << endl;
+    cout << "baseline :" << baseline << " baseline time : " << baseline_time << endl;
+
     /*
     for(Int_t sample = 0; sample < npoints; sample++){
 

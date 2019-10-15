@@ -83,3 +83,16 @@ Double_t waveform::CalculateBaselineBin(Double_t start_bin, Double_t end_bin){
   baseline /= n_bin;
   return baseline;
 }
+
+//-------------------------------------------------------------------------------------------------------------//
+
+//Return baseline calculated from t_start to t_end
+Double_t waveform::CalculateBaseline(Double_t t_start, Double_t t_end){
+
+  //  Double_t baseline = 0.;
+  Double_t bin_start = this->FindBin(t_start);
+  Double_t bin_end = this->FindBin(t_end);
+  Double_t number = this->CalculateBaselineBin(bin_start, bin_end);
+  return number;
+
+}
