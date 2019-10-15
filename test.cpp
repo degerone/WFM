@@ -105,6 +105,37 @@ int main(int n, char* argv[]) {
 
   }
 
+  waveform *invert[n_wfm];
+
+  for(Int_t j=0; j<n_wfm; j++){
+
+    invert[j] = wfm[j]->Invert_wfm();
+
+  }
+
+  TH1D *histo[10];
+  TH1D *inverted_histo[10];
+
+  for(Int_t h = 0 ; h< 10; h++){
+
+    histo[h] = new TH1D("histo", "histo", 400, 0 ,400);
+    inverted_histo[h] = new TH1D("inverted_histo", "inverted_histo", 400, 0, 400);
+
+    for(Int_t j = 0; j<400; j++){
+
+
+      Double_t inv_valore = invert[h]->GetAmpAt(j);
+      inverted_histo[h]->SetBinContent(j,inv_valore);
+      Double_t valore = wfm[h]->GetAmpAt(j);
+      histo[h]->SetBinContent(j,valore);
+    }
+    
+    histo[h]->Write();
+    inverted_histo[h]->Write();
+
+  }
+
+
       cout << "TEST 2" << endl;
       //histo->Write();
       //histo->Delete();

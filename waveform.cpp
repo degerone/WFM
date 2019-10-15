@@ -122,20 +122,21 @@ Double_t waveform::CalculateBaseline(Double_t t_start, Double_t t_end){
 
 
 //Return baseline calculated from bin start_bin to bin end_bin
-/*
-waveform waveform::Invert_wfm(){
 
-  waveform inverted = new waveform();
+waveform* waveform::Invert_wfm(){
+
+  waveform *inverted = new waveform();
   Int_t n_sample = this->GetNsample();
   inverted->SetNsample(n_sample);
   
   for(Int_t i_bin = 0; i_bin<fNsample; i_bin++){
 
-fAmp[i_bin]
+    Double_t amplitude = this->GetAmpAt(i_bin);
+    inverted->SetAmpAt(-amplitude, i_bin);
 
   }
-*/  
-
-//}
+  
+  return inverted;
+}
 
 
