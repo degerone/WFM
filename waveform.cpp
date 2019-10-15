@@ -27,6 +27,27 @@ waveform::waveform(const TH1 *h){
 
 //-------------------------------------------------------------------------------------------------------------//
 
+//waveform basic constructor. Must be followed by a SetNsample
+waveform::waveform(){
+
+}
+
+//-------------------------------------------------------------------------------------------------------------//
+
+//Allocate fAmp[n_sample], fTime[n_sample] for waveform created with waveform()
+void waveform::SetNsample(Int_t n_sample){
+
+  fNsample = n_sample;
+  fAmp = new Double_t[n_sample];
+  fTime = new Double_t[n_sample];
+  memset(fAmp, 0, sizeof(Double_t)*n_sample);
+
+}
+
+
+
+//-------------------------------------------------------------------------------------------------------------//
+
 //Set time range for waveform.
 //It fills time array.
 void waveform::SetTime(Double_t tmin, Double_t tmax){
@@ -92,7 +113,29 @@ Double_t waveform::CalculateBaseline(Double_t t_start, Double_t t_end){
   //  Double_t baseline = 0.;
   Double_t bin_start = this->FindBin(t_start);
   Double_t bin_end = this->FindBin(t_end);
-  Double_t number = this->CalculateBaselineBin(bin_start, bin_end);
-  return number;
+  Double_t baseline_time = this->CalculateBaselineBin(bin_start, bin_end);
+  return baseline_time;
 
 }
+
+//-------------------------------------------------------------------------------------------------------------//
+
+
+//Return baseline calculated from bin start_bin to bin end_bin
+/*
+waveform waveform::Invert_wfm(){
+
+  waveform inverted = new waveform();
+  Int_t n_sample = this->GetNsample();
+  inverted->SetNsample(n_sample);
+  
+  for(Int_t i_bin = 0; i_bin<fNsample; i_bin++){
+
+fAmp[i_bin]
+
+  }
+*/  
+
+//}
+
+

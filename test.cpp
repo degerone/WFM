@@ -87,12 +87,23 @@ int main(int n, char* argv[]) {
 
     }
     */
+  }
 
+  waveform *test = new waveform();
+  test->SetNsample(10);
+  for(Int_t k=0; k<10; k++){
+
+    test->SetAmpAt(0.3*k,k);
 
   }
 
+  Double_t *ampiezze = test->GetAmp();
 
+  for(Int_t k=0; k<10; k++){
 
+    cout << "ampiezza : " << ampiezze[k] << endl;
+
+  }
 
       cout << "TEST 2" << endl;
       //histo->Write();
