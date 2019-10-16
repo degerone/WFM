@@ -1,4 +1,5 @@
 class TH1;
+class TGraph;
 
 class waveform {
 
@@ -10,6 +11,7 @@ class waveform {
   Double_t fTimeMin;
   Double_t fTimeMax;
   Double_t fSamplingInterval;
+  TGraph *fGraph;//Graph used for fitting and drawing
   
  public:
 

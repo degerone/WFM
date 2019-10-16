@@ -121,8 +121,7 @@ Double_t waveform::CalculateBaseline(Double_t t_start, Double_t t_end){
 //-------------------------------------------------------------------------------------------------------------//
 
 
-//Return baseline calculated from bin start_bin to bin end_bin
-
+//Return inverted wfm: fAmp[i] -> -fAmp[i]
 waveform* waveform::Invert_wfm(){
 
   waveform *inverted = new waveform();
