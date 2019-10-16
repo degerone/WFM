@@ -1,6 +1,7 @@
 #include <Riostream.h>
 
 #include <TH1.h>
+#include <TGraphErrors.h>
 
 #include "waveform.h"
 
@@ -12,7 +13,11 @@ using namespace std;
 //It fills amplitude array. 
 //It does NOT fill time array
 //For a complete waveform definition should call SetTime after this
-waveform::waveform(const TH1 *h){
+waveform::waveform(const TH1 *h)
+  : fNsample(0), fGraph(0), fAmp(0), fTime(0)
+
+{
+
 
   fNsample = ((TH1*)h)->GetXaxis()->GetNbins();
   fAmp = new Double_t[fNsample];
@@ -28,7 +33,10 @@ waveform::waveform(const TH1 *h){
 //-------------------------------------------------------------------------------------------------------------//
 
 //waveform basic constructor. Must be followed by a SetNsample
-waveform::waveform(){
+waveform::waveform()
+  : fNsample(0), fGraph(0), fAmp(0), fTime(0)
+
+{
 
 }
 
@@ -120,7 +128,6 @@ Double_t waveform::CalculateBaseline(Double_t t_start, Double_t t_end){
 
 //-------------------------------------------------------------------------------------------------------------//
 
-
 //Return inverted wfm: fAmp[i] -> -fAmp[i]
 waveform* waveform::Invert_wfm(){
 
@@ -138,4 +145,16 @@ waveform* waveform::Invert_wfm(){
   return inverted;
 }
 
+//-------------------------------------------------------------------------------------------------------------//
 
+void waveform::Fit(){
+
+  Double_t *amplitude = 0;
+  Double_t *time = 0;
+
+  if(!fGraph) 
+    fGraph = new TGraph(fNsample, fTime, fAmp);
+  //fGraph->Write();
+  //fGraph->Draw("AP*");
+
+}

@@ -13,6 +13,7 @@
 #include <TPad.h>
 #include <TChain.h>
 #include <TCanvas.h>
+#include <TGraph.h>
 
 #include "waveform.h"
 
@@ -57,6 +58,7 @@ int main(int n, char* argv[]) {
     wfm[wfm_id]->SetTime((-wfm_id * 1e-5),0.);
   }
  
+  /*
   for(Int_t wfm_id=0; wfm_id<n_wfm; wfm_id++){
 
     Double_t *time = wfm[wfm_id]->GetTime();
@@ -80,15 +82,10 @@ int main(int n, char* argv[]) {
     cout << "bin check start : " << check_bin_start << " check bin end : " << check_bin_end << endl;
     cout << "baseline :" << baseline << " baseline time : " << baseline_time << endl;
 
-    /*
-    for(Int_t sample = 0; sample < npoints; sample++){
-
-      cout << "tempo del sample " << sample << " della wfm " << wfm_id << " :" << time[sample] << endl;
-
-    }
-    */
   }
+  */
 
+  /*
   waveform *test = new waveform();
   test->SetNsample(10);
   for(Int_t k=0; k<10; k++){
@@ -96,7 +93,9 @@ int main(int n, char* argv[]) {
     test->SetAmpAt(0.3*k,k);
 
   }
+  */
 
+  /*
   Double_t *ampiezze = test->GetAmp();
 
   for(Int_t k=0; k<10; k++){
@@ -104,7 +103,9 @@ int main(int n, char* argv[]) {
     cout << "ampiezza : " << ampiezze[k] << endl;
 
   }
+  */
 
+  /*
   waveform *invert[n_wfm];
 
   for(Int_t j=0; j<n_wfm; j++){
@@ -112,6 +113,7 @@ int main(int n, char* argv[]) {
     invert[j] = wfm[j]->Invert_wfm();
 
   }
+  */
 
   TH1D *histo[10];
   TH1D *inverted_histo[10];
@@ -121,6 +123,7 @@ int main(int n, char* argv[]) {
     histo[h] = new TH1D("histo", "histo", 400, 0 ,400);
     inverted_histo[h] = new TH1D("inverted_histo", "inverted_histo", 400, 0, 400);
 
+    /*
     for(Int_t j = 0; j<400; j++){
 
 
@@ -129,12 +132,40 @@ int main(int n, char* argv[]) {
       Double_t valore = wfm[h]->GetAmpAt(j);
       histo[h]->SetBinContent(j,valore);
     }
-    
+    */
+
+    /*
     histo[h]->Write();
     inverted_histo[h]->Write();
-
+    */
   }
 
+  //Test della routine di fitting
+
+  for(Int_t y=0; y<n_wfm; y++){
+
+    wfm[y]->Fit();
+    TGraph *g = new TGraph();
+    g = wfm[y]->GetGraph();
+
+    //    Int_t enne = wfm[y]->GetNsample();
+
+    //    Double_t *ampiezze = new Double_t[enne];
+    //Double_t *ampiezze = wfm[y]->GetAmp();
+    //Double_t *ampiezze = g->GetX();
+    //Double_t *tempi = wfm[y]->GetTime();
+    
+    //for(Int_t p =0; p<enne; p++){
+
+    // cout << "ampiezza bin " << p << " tempo " << tempi[p] <<" e' " << ampiezze[p] << endl;
+    //}
+
+
+    //TGraph *g = new TGraph(enne, tempi, ampiezze);    
+    g->Write();
+    //g->Delete();
+    //g->Draw("AP*");
+  }
 
       cout << "TEST 2" << endl;
       //histo->Write();

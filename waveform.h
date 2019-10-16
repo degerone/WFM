@@ -32,5 +32,10 @@ class waveform {
   Double_t CalculateBaselineBin(Double_t start_bin, Double_t end_bin);
   Double_t CalculateBaseline(Double_t t_start, Double_t t_end);
   waveform *Invert_wfm();
+  void Fit();
+  TGraph *GetGraph() {return fGraph;}
+
+
+
 
 };
