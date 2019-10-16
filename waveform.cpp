@@ -7,6 +7,18 @@
 
 using namespace std;
 
+Double_t Pfnc(Double_t *x, Double_t *par){
+
+  Double_t out = 0.;
+    if(x[0]<par[0])
+      out = 0;
+    else
+      out = par[1]*(exp((-x[0]+par[0])/par[2])-exp((-x[0]+par[0])/par[3]));
+  return out;
+
+}
+
+
 
 //Standard waveform creator from histogram. 
 //It allocates amplitude and time arrays with size fNsample given by the number of bin from original histogram. 
@@ -17,7 +29,6 @@ waveform::waveform(const TH1 *h)
   : fNsample(0), fGraph(0), fAmp(0), fTime(0)
 
 {
-
 
   fNsample = ((TH1*)h)->GetXaxis()->GetNbins();
   fAmp = new Double_t[fNsample];
@@ -49,7 +60,7 @@ void waveform::SetNsample(Int_t n_sample){
   fAmp = new Double_t[n_sample];
   fTime = new Double_t[n_sample];
   memset(fAmp, 0, sizeof(Double_t)*n_sample);
-
+  memset(fAmp, 0, sizeof(Double_t)*n_sample);
 }
 
 
@@ -149,12 +160,10 @@ waveform* waveform::Invert_wfm(){
 
 void waveform::Fit(){
 
-  Double_t *amplitude = 0;
-  Double_t *time = 0;
-
   if(!fGraph) 
-    fGraph = new TGraph(fNsample, fTime, fAmp);
-  //fGraph->Write();
-  //fGraph->Draw("AP*");
-
+    //    fGraph = new TGraph(fNsample, fTime, fAmp);
+    fGraph = new TGraph(fNsample);
+  memcpy(fGraph->GetY(), fTime, sizeof(Double_t)*fNsample);
+  memcpy(fGraph->GetX(), fAmp, sizeof(Double_t)*fNsample);
+ 
 }

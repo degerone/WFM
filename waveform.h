@@ -1,3 +1,6 @@
+Double_t Pfnc(Double_t *x, Double_t *par);//single exp pulse
+
+
 class TH1;
 class TGraph;
 
