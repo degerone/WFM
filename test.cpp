@@ -105,7 +105,7 @@ int main(int n, char* argv[]) {
   }
   */
 
-  /*
+  
   waveform *invert[n_wfm];
 
   for(Int_t j=0; j<n_wfm; j++){
@@ -113,7 +113,7 @@ int main(int n, char* argv[]) {
     invert[j] = wfm[j]->Invert_wfm();
 
   }
-  */
+  
 
   TH1D *histo[10];
   TH1D *inverted_histo[10];
@@ -144,9 +144,9 @@ int main(int n, char* argv[]) {
 
   for(Int_t y=0; y<n_wfm; y++){
 
-    wfm[y]->Fit();
+    invert[y]->Fit();
     TGraph *g = new TGraph();
-    g = wfm[y]->GetGraph();
+    g = invert[y]->GetGraph();
 
     //    Int_t enne = wfm[y]->GetNsample();
 

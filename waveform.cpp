@@ -152,7 +152,11 @@ waveform* waveform::Invert_wfm(){
     inverted->SetAmpAt(-amplitude, i_bin);
 
   }
-  
+ 
+  Double_t time_min = this->GetTimeMin();
+  Double_t time_max = this->GetTimeMax();
+  inverted->SetTime(time_min, time_max);
+ 
   return inverted;
 }
 
@@ -163,7 +167,7 @@ void waveform::Fit(){
   if(!fGraph) 
     //    fGraph = new TGraph(fNsample, fTime, fAmp);
     fGraph = new TGraph(fNsample);
-  memcpy(fGraph->GetY(), fTime, sizeof(Double_t)*fNsample);
-  memcpy(fGraph->GetX(), fAmp, sizeof(Double_t)*fNsample);
+  memcpy(fGraph->GetX(), fTime, sizeof(Double_t)*fNsample);
+  memcpy(fGraph->GetY(), fAmp, sizeof(Double_t)*fNsample);
  
 }
