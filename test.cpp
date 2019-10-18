@@ -175,14 +175,18 @@ int main(int n, char* argv[]) {
 
     TF1 *p = new TF1("Pulse", Pfnc, tmin, tmax, 4);
 
-    Double_t max;
-    Int_t  max_bin;
+    Double_t max, min;
+    Int_t  max_bin, min_bin;
 
     //    cout << "fin qui " << endl;
 
     invert[y]->GetMaximum(max, max_bin, tmin, tmax);
+    invert[y]->GetMinimum(min, min_bin, tmin, tmax);
     invert[y]->Fit(p);
+
     cout << " massimo : " << max << " nel bin " << max_bin << endl; 
+    cout << " minimo : " << min << " nel bin " << min_bin << endl; 
+
     TGraph *g = new TGraph();
     g = invert[y]->GetGraph();
 

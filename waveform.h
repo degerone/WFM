@@ -36,7 +36,7 @@ class waveform {
   void Fit(TF1 *func);
   TGraph *GetGraph() {return fGraph;}
   void GetMaximum(Double_t &max, Int_t &max_bin, Double_t tmin, Double_t tmax);
-
+  void GetMinimum(Double_t &min, Int_t &min_bin, Double_t tmin, Double_t tmax);
 
 
 };
