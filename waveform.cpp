@@ -2,23 +2,11 @@
 
 #include <TH1.h>
 #include <TGraphErrors.h>
+#include <TF1.h>
 
 #include "waveform.h"
 
 using namespace std;
-
-Double_t Pfnc(Double_t *x, Double_t *par){
-
-  Double_t out = 0.;
-    if(x[0]<par[0])
-      out = 0;
-    else
-      out = par[1]*(exp((-x[0]+par[0])/par[2])-exp((-x[0]+par[0])/par[3]));
-  return out;
-
-}
-
-
 
 //Standard waveform creator from histogram. 
 //It allocates amplitude and time arrays with size fNsample given by the number of bin from original histogram. 
@@ -156,13 +144,29 @@ waveform* waveform::Invert_wfm(){
   Double_t time_min = this->GetTimeMin();
   Double_t time_max = this->GetTimeMax();
   inverted->SetTime(time_min, time_max);
- 
+
   return inverted;
 }
 
 //-------------------------------------------------------------------------------------------------------------//
 
-void waveform::Fit(){
+void waveform::GetMaximum(Double_t &max, Int_t &max_bin, Double_t tmin, Double_t tmax){
+
+  Int_t start_bin;
+  Int_t end_bin;
+
+  start_bin = FindBin(tmin);
+  end_bin = FindBin(tmax);
+
+  Double_t *max_pointer = max_element(fAmp + 0, fAmp + 400);
+  max = *max_pointer;
+  max_bin = max_pointer - fAmp;
+
+}
+
+//-------------------------------------------------------------------------------------------------------------//
+
+void waveform::Fit(TF1 *func){
 
   if(!fGraph) 
     //    fGraph = new TGraph(fNsample, fTime, fAmp);
@@ -170,4 +174,5 @@ void waveform::Fit(){
   memcpy(fGraph->GetX(), fTime, sizeof(Double_t)*fNsample);
   memcpy(fGraph->GetY(), fAmp, sizeof(Double_t)*fNsample);
  
+
 }

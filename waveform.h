@@ -1,8 +1,6 @@
-Double_t Pfnc(Double_t *x, Double_t *par);//single exp pulse
-
-
 class TH1;
 class TGraph;
+class TF1;
 
 class waveform {
 
@@ -35,9 +33,9 @@ class waveform {
   Double_t CalculateBaselineBin(Double_t start_bin, Double_t end_bin);
   Double_t CalculateBaseline(Double_t t_start, Double_t t_end);
   waveform *Invert_wfm();
-  void Fit();
+  void Fit(TF1 *func);
   TGraph *GetGraph() {return fGraph;}
-
+  void GetMaximum(Double_t &max, Int_t &max_bin, Double_t tmin, Double_t tmax);
 
 
 

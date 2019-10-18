@@ -21,6 +21,18 @@ using namespace std;
 
 TApplication app("gui",0,NULL);
 
+  //test of fitting with single exp function
+  Double_t Pfnc(Double_t *x, Double_t *par){
+
+    Double_t out = 0.;
+    if(x[0]<par[0])
+      out = 0.;
+    else
+      out = par[1]*(exp((-x[0]+par[0])/par[2])-exp((-x[0]+par[0])/par[3]));
+    return out;
+
+  } 
+
 int main(int n, char* argv[]) {
 
   cout << "\nAcquisisco waveform da file  "<< argv[1] << endl;
@@ -55,7 +67,7 @@ int main(int n, char* argv[]) {
 
   for(Int_t wfm_id=0; wfm_id<n_wfm; wfm_id++){
 
-    wfm[wfm_id]->SetTime((-wfm_id * 1e-5),0.);
+    wfm[wfm_id]->SetTime(((wfm_id + 1) * -1e-5),0.);
   }
  
   /*
@@ -142,9 +154,35 @@ int main(int n, char* argv[]) {
 
   //Test della routine di fitting
 
+  /*
+    for(Int_t sample = 0; sample < npoints; sample++){
+
+      cout << "tempo del sample " << sample << " della wfm " << wfm_id << " :" << time[sample] << endl;
+
+    }
+    */
+
+
   for(Int_t y=0; y<n_wfm; y++){
 
-    invert[y]->Fit();
+
+    Double_t tmax = invert[y]->GetTimeMax();
+    Double_t tmin = invert[y]->GetTimeMin();
+
+    cout << "analizzo la wfm : " << y << endl;
+    cout << "tmax " << tmax << endl;
+    cout << "tmin " << tmin << endl;
+
+    TF1 *p = new TF1("Pulse", Pfnc, tmin, tmax, 4);
+
+    Double_t max;
+    Int_t  max_bin;
+
+    //    cout << "fin qui " << endl;
+
+    invert[y]->GetMaximum(max, max_bin, tmin, tmax);
+    invert[y]->Fit(p);
+    cout << " massimo : " << max << " nel bin " << max_bin << endl; 
     TGraph *g = new TGraph();
     g = invert[y]->GetGraph();
 
