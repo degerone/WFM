@@ -158,7 +158,7 @@ void waveform::GetMaximum(Double_t &max, Int_t &max_bin, Double_t tmin, Double_t
   start_bin = FindBin(tmin);
   end_bin = FindBin(tmax);
 
-  Double_t *max_pointer = max_element(fAmp + 0, fAmp + 400);
+  Double_t *max_pointer = max_element(fAmp + start_bin, fAmp + end_bin);
   max = *max_pointer;
   max_bin = max_pointer - fAmp;
 
