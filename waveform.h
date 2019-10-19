@@ -39,5 +39,7 @@ class waveform {
   void GetMaximum(Double_t &max, Int_t &max_bin, Double_t tmin, Double_t tmax);
   void GetMinimum(Double_t &min, Int_t &min_bin, Double_t tmin, Double_t tmax);
   waveform* MakeTemplate(waveform  *wfm[], Int_t n_wfm_used);
+  waveform* Convolution(waveform* wfm, waveform* kernel);
+
 
 };

@@ -241,6 +241,34 @@ TF1 *p = new TF1("Pulse", Pfnc, 0, 2e-4, 4);
 
       }
 
+      waveform *conv = new waveform();
+      conv->Convolution(wfm[0],temp);
+      cout << "check time min " << wfm[0]->GetTimeMin() << " check time max " << wfm[0]->GetTimeMax() << endl;
+
+      //      cout << "prova conv : fNsample " << conv->GetNsample() << endl;
+      Double_t *amp_conv;
+      amp_conv = conv->GetAmp();
+      /*
+      for(Int_t i_conv = 0; i_conv < conv->GetNsample(); i_conv++){
+
+	cout << "ampiezza conv " << amp_conv[i_conv] << endl;
+      }
+      */
+      TGraph *grafico = new TGraph("test");
+      grafico = conv->Graph_from_wfm();
+      grafico->Write();
+
+      TH1D *h2 = new TH1D("h2", "h2", conv->GetNsample(), 0, conv->GetNsample());
+
+      for(Int_t i_bin = 0; i_bin < conv->GetNsample(); i_bin ++){
+
+	h2->SetBinContent(i_bin, conv->GetAmpAt(i_bin));
+
+      }
+
+      h2->Write();
+
+
       //      temp->Fit(p);
       cout << "TEST 2" << endl;
       //histo->Write();

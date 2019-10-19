@@ -217,11 +217,20 @@ void waveform::Fit(TF1 *func){
 
 TGraph* waveform::Graph_from_wfm(){
 
-  if(!fGraph) 
+  //  if(!fGraph) 
     //    fGraph = new TGraph(fNsample, fTime, fAmp);
     fGraph = new TGraph(fNsample);
+
+    cout << "fNsample in Graphfromewfm " << fNsample << endl;
   memcpy(fGraph->GetX(), fTime, sizeof(Double_t)*fNsample);
   memcpy(fGraph->GetY(), fAmp, sizeof(Double_t)*fNsample);
+  /*
+  for(Int_t iSample = 0; iSample < fNsample; iSample++){
+    
+    cout << "tempo al Graph from wfm " << fTime[iSample] << endl;
+  }
+  */
+
   return fGraph;
 
 }
@@ -257,3 +266,42 @@ waveform* waveform::MakeTemplate(waveform* wfm[], Int_t n_wfm_used){
   return this;
 }
 
+//-------------------------------------------------------------------------------------------------------------//
+
+waveform* waveform::Convolution(waveform* wfm, waveform* kernel){
+
+  Int_t n_sample = wfm->GetNsample();
+  Double_t t_min = wfm->GetTimeMin();
+  Double_t t_max = wfm->GetTimeMax();
+  cout << "time min alla conv " << t_min << " time max alla conv " << t_max << endl;
+
+
+  this->SetNsample(n_sample*2);
+  Double_t temp_value = 0.;
+
+  for(Int_t i_bin_conv = 0; i_bin_conv< 2*n_sample-1; i_bin_conv++)
+      {
+	//i1=i;
+	temp_value=0.0;
+	for(Int_t j_bin = 0; j_bin < n_sample; j_bin++)
+	  {
+	    if((i_bin_conv - j_bin) >=0 && (i_bin_conv - j_bin) < n_sample)
+	     
+	      temp_value = temp_value + kernel->GetAmpAt(i_bin_conv - j_bin) * wfm->GetAmpAt(j_bin);
+	    
+	  }
+
+	this->SetAmpAt(temp_value, i_bin_conv);
+	//	cout << "bin number " << i_bin_conv << "temp value alla conv " << temp_value << endl;
+      }
+  
+  this->SetTime(t_min, t_max*2);
+  
+  
+  for(Int_t iSample = 0; iSample < fNsample; iSample++){
+    
+    cout << "tempo al Graph from wfm " << fTime[iSample] << endl;
+  }
+  
+  return this;
+}
