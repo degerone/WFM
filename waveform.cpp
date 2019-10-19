@@ -198,10 +198,10 @@ void waveform::Fit(TF1 *func){
   cout << "fNsamplingInterval : " << fSamplingInterval << endl;
   cout << "time max nella funzione di fit : " << time_max << endl;
 
-  Double_t nuovo_time = time_max - 1e-6;
+  //  Double_t nuovo_time = time_max - 1e-6;
 
   func->SetParLimits(0,time_max/2, time_max);
-  func->SetParLimits(1,0,max*2);
+  func->SetParLimits(1,0,2.);
   func->SetParLimits(2,0,1e-4);
   func->SetParLimits(3,0,1e-4);
 
@@ -210,7 +210,7 @@ void waveform::Fit(TF1 *func){
   func->SetParameter(2, 2e-6);
   func->SetParameter(3, 3e-5);
 
-  fGraph->Fit(func, "WR0", 0, fTimeMax);
+  fGraph->Fit(func, "WR0V", "", 0, fTimeMax);
 
 
 }
