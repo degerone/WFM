@@ -233,6 +233,14 @@ TF1 *p = new TF1("Pulse", Pfnc, 0, 2e-4, 4);
 
       h->Write();
 
+      for(Int_t i_wfm =0; i_wfm < n_wfm; i_wfm++){
+
+	TGraph *g = new TGraph();
+	g = wfm[i_wfm]->Graph_from_wfm();
+	g->Write();
+
+      }
+
       //      temp->Fit(p);
       cout << "TEST 2" << endl;
       //histo->Write();

@@ -34,6 +34,7 @@ class waveform {
   Double_t CalculateBaseline(Double_t t_start, Double_t t_end);
   waveform *Invert_wfm();
   void Fit(TF1 *func);
+  TGraph *Graph_from_wfm();
   TGraph *GetGraph() {return fGraph;}
   void GetMaximum(Double_t &max, Int_t &max_bin, Double_t tmin, Double_t tmax);
   void GetMinimum(Double_t &min, Int_t &min_bin, Double_t tmin, Double_t tmax);

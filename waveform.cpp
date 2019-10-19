@@ -215,6 +215,20 @@ void waveform::Fit(TF1 *func){
 
 //-------------------------------------------------------------------------------------------------------------//
 
+TGraph* waveform::Graph_from_wfm(){
+
+  if(!fGraph) 
+    //    fGraph = new TGraph(fNsample, fTime, fAmp);
+    fGraph = new TGraph(fNsample);
+  memcpy(fGraph->GetX(), fTime, sizeof(Double_t)*fNsample);
+  memcpy(fGraph->GetY(), fAmp, sizeof(Double_t)*fNsample);
+  return fGraph;
+
+}
+
+
+
+//-------------------------------------------------------------------------------------------------------------//
 
 //Creates a template waveform starting from wfm array using n_wfm_used waveforms.
 waveform* waveform::MakeTemplate(waveform* wfm[], Int_t n_wfm_used){
