@@ -162,6 +162,8 @@ int main(int n, char* argv[]) {
     }
     */
 
+TF1 *p = new TF1("Pulse", Pfnc, 0, 2e-4, 4);
+
 
   for(Int_t y=0; y<n_wfm; y++){
 
@@ -173,8 +175,7 @@ int main(int n, char* argv[]) {
     cout << "tmax " << tmax << endl;
     cout << "tmin " << tmin << endl;
 
-    TF1 *p = new TF1("Pulse", Pfnc, 0, 2e-4, 4);
-
+    
     Double_t max, min;
     Int_t  max_bin, min_bin;
 
@@ -209,6 +210,30 @@ int main(int n, char* argv[]) {
     //g->Draw("AP*");
   }
 
+  // waveform* base = new waveform();
+
+  //waveform *temp = base->MakeTemplate(wfm,2);
+  
+  waveform *temp = new waveform();
+  temp->MakeTemplate(wfm,5);
+
+//      temp->MakeTemplate(wfm, 2);
+      
+      Double_t *amp_templ = temp->GetAmp();
+      Int_t bin_templ = temp->GetNsample();
+      cout << "bin_templ " << bin_templ << endl;
+
+      TH1D *h = new TH1D("h", "h", bin_templ, 0, bin_templ);
+
+      for(Int_t i_bin = 0; i_bin < bin_templ; i_bin ++){
+
+	h->SetBinContent(i_bin, amp_templ[i_bin]);
+
+      }
+
+      h->Write();
+
+      //      temp->Fit(p);
       cout << "TEST 2" << endl;
       //histo->Write();
       //histo->Delete();

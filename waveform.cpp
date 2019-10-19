@@ -48,7 +48,7 @@ void waveform::SetNsample(Int_t n_sample){
   fAmp = new Double_t[n_sample];
   fTime = new Double_t[n_sample];
   memset(fAmp, 0, sizeof(Double_t)*n_sample);
-  memset(fAmp, 0, sizeof(Double_t)*n_sample);
+  memset(fTime, 0, sizeof(Double_t)*n_sample);
 }
 
 
@@ -198,10 +198,8 @@ void waveform::Fit(TF1 *func){
   cout << "fNsamplingInterval : " << fSamplingInterval << endl;
   cout << "time max nella funzione di fit : " << time_max << endl;
 
-  //  Double_t nuovo_time = time_max - 1e-6;
-
-  func->SetParLimits(0,time_max/2, time_max);
-  func->SetParLimits(1,0,2.);
+  func->SetParLimits(0,time_max - 2e-5, time_max);
+  func->SetParLimits(1,0,5.);
   func->SetParLimits(2,0,1e-4);
   func->SetParLimits(3,0,1e-4);
 
@@ -210,7 +208,38 @@ void waveform::Fit(TF1 *func){
   func->SetParameter(2, 2e-6);
   func->SetParameter(3, 3e-5);
 
-  fGraph->Fit(func, "WR0V", "", 0, fTimeMax);
-
+  fGraph->Fit(func, "WR0Q", 0, fTimeMax);
 
 }
+
+
+//-------------------------------------------------------------------------------------------------------------//
+
+
+//Creates a template waveform starting from wfm array using n_wfm_used waveforms.
+waveform* waveform::MakeTemplate(waveform* wfm[], Int_t n_wfm_used){
+
+  // waveform *templ = new waveform();//creates empty templates waveform
+  Int_t n_sample = wfm[0]->GetNsample();//all waveform are equal with same number of sample
+  cout << "prova template " << endl;
+  cout << "n_sample in template " << n_sample << endl;
+
+  this->SetNsample(n_sample);//allocates fAmp and fTime
+
+    Double_t *Amp = this->GetAmp();
+
+  for(Int_t i_wfm = 0; i_wfm < n_wfm_used; i_wfm++){
+    
+    for(Int_t i_bin = 0; i_bin < n_sample; i_bin++){
+
+      //      cout << "tanti ciao " << endl; 
+      Amp[i_bin] += wfm[i_wfm]->GetAmpAt(i_bin)/n_wfm_used;
+    }
+  }
+
+  Double_t t_min = wfm[0]->GetTimeMin();
+  Double_t t_max = wfm[0]->GetTimeMax();
+  this->SetTime(t_min, t_max);
+  return this;
+}
+
