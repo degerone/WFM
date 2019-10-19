@@ -22,16 +22,16 @@ using namespace std;
 TApplication app("gui",0,NULL);
 
   //test of fitting with single exp function
-  Double_t Pfnc(Double_t *x, Double_t *par){
-
-    Double_t out = 0.;
-    if(x[0]<par[0])
-      out = 0.;
-    else
-      out = par[1]*(exp((-x[0]+par[0])/par[2])-exp((-x[0]+par[0])/par[3]));
-    return out;
-
-  } 
+Double_t Pfnc(Double_t *x, Double_t *par){
+  
+  Double_t out = 0.;
+  if(x[0]<par[0])
+    out = 0.;
+  else
+    out = par[1]*(exp((-x[0]+par[0])/par[2])-exp((-x[0]+par[0])/par[3]));
+  return out;
+  
+} 
 
 int main(int n, char* argv[]) {
 
@@ -67,7 +67,7 @@ int main(int n, char* argv[]) {
 
   for(Int_t wfm_id=0; wfm_id<n_wfm; wfm_id++){
 
-    wfm[wfm_id]->SetTime(((wfm_id + 1) * -1e-5),0.);
+    wfm[wfm_id]->SetTime(0, 2e-4);
   }
  
   /*
@@ -173,7 +173,7 @@ int main(int n, char* argv[]) {
     cout << "tmax " << tmax << endl;
     cout << "tmin " << tmin << endl;
 
-    TF1 *p = new TF1("Pulse", Pfnc, tmin, tmax, 4);
+    TF1 *p = new TF1("Pulse", Pfnc, 0, 2e-4, 4);
 
     Double_t max, min;
     Int_t  max_bin, min_bin;

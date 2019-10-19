@@ -189,6 +189,28 @@ void waveform::Fit(TF1 *func){
     fGraph = new TGraph(fNsample);
   memcpy(fGraph->GetX(), fTime, sizeof(Double_t)*fNsample);
   memcpy(fGraph->GetY(), fAmp, sizeof(Double_t)*fNsample);
- 
+  Int_t max_bin;
+  Double_t max;
+  this->GetMaximum(max, max_bin, fTimeMin, fTimeMax);
+  Double_t time_max = GetTimeAt(max_bin);
+
+  cout<< "fNsample " << fNsample << endl;
+  cout << "fNsamplingInterval : " << fSamplingInterval << endl;
+  cout << "time max nella funzione di fit : " << time_max << endl;
+
+  Double_t nuovo_time = time_max - 1e-6;
+
+  func->SetParLimits(0,time_max/2, time_max);
+  func->SetParLimits(1,0,max*2);
+  func->SetParLimits(2,0,1e-4);
+  func->SetParLimits(3,0,1e-4);
+
+  func->SetParameter(0, time_max - 3e-6);
+  func->SetParameter(1, max);
+  func->SetParameter(2, 2e-6);
+  func->SetParameter(3, 3e-5);
+
+  fGraph->Fit(func, "WR0", 0, fTimeMax);
+
 
 }
