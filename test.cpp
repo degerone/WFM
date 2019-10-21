@@ -222,10 +222,9 @@ int main(int n, char* argv[]) {
 	      inverted[wfm_id]->GetMinimum(min, min_bin, tmin, tmax);
 
 	      cout << "Wfm id: " << wfm_id << " has a maximum " << max << " in bin: " << max_bin << endl; 
-	      cout << "Wfm id: " << wfm_id << " has a minimum " << min << " in bin: " << min_bin << endl; 
-	    	    
-	      inverted[wfm_id]->Fit(func);
-	     
+	      cout << "Wfm id: " << wfm_id << " has a minimum " << min << " in bin: " << min_bin << endl;     
+	      //inverted[wfm_id]->Fit(func);
+	      inverted[wfm_id]->Fit(func, "WRMQ");
 	      TGraph *g_fit = new TGraph();
 	      stringstream z;
 	      z << wfm_id;
@@ -262,6 +261,7 @@ int main(int n, char* argv[]) {
 	cout << "Check inverted/template is false! Inverted wfms / template are not created -> filter is skipped!" << endl;
       else
 	{
+	  cout << "check filter is activated! You should find some convolutions wfm in output file! " << endl;
 	  for(Int_t wfm_id = 0; wfm_id < 10; wfm_id++)
 	    {
 	      conv[wfm_id] = inverted[wfm_id]->Convolution(temp);

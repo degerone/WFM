@@ -37,7 +37,8 @@ class waveform {
   Int_t FindBin(Double_t time);
   Double_t CalculateBaselineBin(Double_t start_bin, Double_t end_bin);
   Double_t CalculateBaseline(Double_t t_start, Double_t t_end);
-  void Fit(TF1 *func);
+  void Fit(TF1 *func);//options are "WRM" by default 
+  void Fit(TF1 *func, Option_t *opt);
   TGraph *Graph_from_wfm();
   waveform *Invert_wfm();
   waveform* MakeTemplate(waveform  *wfm[], Int_t n_wfm_used);
