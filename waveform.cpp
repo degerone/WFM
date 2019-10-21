@@ -8,7 +8,7 @@
 
 using namespace std;
 
-//Standard waveform creator from histogram. 
+//Waveform creator from histogram. 
 //It allocates amplitude and time arrays with size fNsample given by the number of bin from original histogram. 
 //It fills amplitude array. 
 //It does NOT fill time array
@@ -29,18 +29,17 @@ waveform::waveform(const TH1 *h)
   }
 }
 
-//-------------------------------------------------------------------------------------------------------------//
 
+//-------------------------------------------------------------------------------------------------------------//
 //waveform basic constructor. Must be followed by a SetNsample
 waveform::waveform()
   : fNsample(0), fGraph(0), fAmp(0), fTime(0)
 
 {
-
 }
 
-//-------------------------------------------------------------------------------------------------------------//
 
+//-------------------------------------------------------------------------------------------------------------//
 //Allocate fAmp[n_sample], fTime[n_sample] for waveform created with waveform()
 void waveform::SetNsample(Int_t n_sample){
 
@@ -49,12 +48,11 @@ void waveform::SetNsample(Int_t n_sample){
   fTime = new Double_t[n_sample];
   memset(fAmp, 0, sizeof(Double_t)*n_sample);
   memset(fTime, 0, sizeof(Double_t)*n_sample);
+
 }
 
 
-
 //-------------------------------------------------------------------------------------------------------------//
-
 //Set time range for waveform.
 //It fills time array.
 void waveform::SetTime(Double_t tmin, Double_t tmax){
@@ -68,8 +66,8 @@ void waveform::SetTime(Double_t tmin, Double_t tmax){
   }
 }
 
-//-------------------------------------------------------------------------------------------------------------//
 
+//-------------------------------------------------------------------------------------------------------------//
 //Return time of sample
 //If sample is lower (greater) than 0 (fNsample) returns -1e5 (1e5)
 Double_t waveform::GetTimeAt(Int_t sample){
@@ -81,8 +79,8 @@ Double_t waveform::GetTimeAt(Int_t sample){
 
 }
 
-//-------------------------------------------------------------------------------------------------------------//
 
+//-------------------------------------------------------------------------------------------------------------//
 //Return bin number containing time 
 Int_t waveform::FindBin(Double_t time){
 
@@ -94,8 +92,8 @@ Int_t waveform::FindBin(Double_t time){
 
 }
 
-//-------------------------------------------------------------------------------------------------------------//
 
+//-------------------------------------------------------------------------------------------------------------//
 //Return baseline calculated from bin start_bin to bin end_bin
 Double_t waveform::CalculateBaselineBin(Double_t start_bin, Double_t end_bin){
 
@@ -112,8 +110,8 @@ Double_t waveform::CalculateBaselineBin(Double_t start_bin, Double_t end_bin){
   return baseline;
 }
 
-//-------------------------------------------------------------------------------------------------------------//
 
+//-------------------------------------------------------------------------------------------------------------//
 //Return baseline calculated from t_start to t_end
 Double_t waveform::CalculateBaseline(Double_t t_start, Double_t t_end){
 
@@ -125,8 +123,8 @@ Double_t waveform::CalculateBaseline(Double_t t_start, Double_t t_end){
 
 }
 
-//-------------------------------------------------------------------------------------------------------------//
 
+//-------------------------------------------------------------------------------------------------------------//
 //Return inverted wfm: fAmp[i] -> -fAmp[i]
 waveform* waveform::Invert_wfm(){
 
@@ -148,8 +146,9 @@ waveform* waveform::Invert_wfm(){
   return inverted;
 }
 
-//-------------------------------------------------------------------------------------------------------------//
 
+//-------------------------------------------------------------------------------------------------------------//
+//Return the maximum and the corresponding bin of the current waveform calculated in the range (tmin, tmax)
 void waveform::GetMaximum(Double_t &max, Int_t &max_bin, Double_t tmin, Double_t tmax){
 
   Int_t start_bin;
@@ -164,8 +163,9 @@ void waveform::GetMaximum(Double_t &max, Int_t &max_bin, Double_t tmin, Double_t
 
 }
 
-//-------------------------------------------------------------------------------------------------------------//
 
+//-------------------------------------------------------------------------------------------------------------//
+//Return the minimum and the corresponding bin if the current waveform calculated in the range (tmimn, tmax)
 void waveform::GetMinimum(Double_t &min, Int_t &min_bin, Double_t tmin, Double_t tmax){
 
   Int_t start_bin;
@@ -180,12 +180,13 @@ void waveform::GetMinimum(Double_t &min, Int_t &min_bin, Double_t tmin, Double_t
 
 }
 
-//-------------------------------------------------------------------------------------------------------------//
 
+//-------------------------------------------------------------------------------------------------------------//
+//Fit the current waveform. Currently with a 2 exp function (1 exp for rise and 1 exp for decay)
+//STILL TO BE IMPROVED!!
 void waveform::Fit(TF1 *func){
 
   if(!fGraph) 
-    //    fGraph = new TGraph(fNsample, fTime, fAmp);
     fGraph = new TGraph(fNsample);
   memcpy(fGraph->GetX(), fTime, sizeof(Double_t)*fNsample);
   memcpy(fGraph->GetY(), fAmp, sizeof(Double_t)*fNsample);
@@ -194,9 +195,9 @@ void waveform::Fit(TF1 *func){
   this->GetMaximum(max, max_bin, fTimeMin, fTimeMax);
   Double_t time_max = GetTimeAt(max_bin);
 
-  cout<< "fNsample " << fNsample << endl;
-  cout << "fNsamplingInterval : " << fSamplingInterval << endl;
-  cout << "time max nella funzione di fit : " << time_max << endl;
+  //  cout<< "fNsample " << fNsample << endl;
+  //  cout << "fNsamplingInterval : " << fSamplingInterval << endl;
+  //  cout << "time max nella funzione di fit : " << time_max << endl;
 
   func->SetParLimits(0,time_max - 2e-5, time_max);
   func->SetParLimits(1,0,5.);
@@ -208,55 +209,37 @@ void waveform::Fit(TF1 *func){
   func->SetParameter(2, 2e-6);
   func->SetParameter(3, 3e-5);
 
-  fGraph->Fit(func, "WR0Q", 0, fTimeMax);
+  fGraph->Fit(func, "WRM", 0, fTimeMax/2);
 
 }
 
 
 //-------------------------------------------------------------------------------------------------------------//
-
+//Obtain a TGraph from the current waveform
 TGraph* waveform::Graph_from_wfm(){
 
-  //  if(!fGraph) 
-    //    fGraph = new TGraph(fNsample, fTime, fAmp);
-    fGraph = new TGraph(fNsample);
-
-    cout << "fNsample in Graphfromewfm " << fNsample << endl;
+  fGraph = new TGraph(fNsample);
   memcpy(fGraph->GetX(), fTime, sizeof(Double_t)*fNsample);
   memcpy(fGraph->GetY(), fAmp, sizeof(Double_t)*fNsample);
-  /*
-  for(Int_t iSample = 0; iSample < fNsample; iSample++){
-    
-    cout << "tempo al Graph from wfm " << fTime[iSample] << endl;
-  }
-  */
-
+  
   return fGraph;
 
 }
 
 
-
 //-------------------------------------------------------------------------------------------------------------//
-
 //Creates a template waveform starting from wfm array using n_wfm_used waveforms.
 waveform* waveform::MakeTemplate(waveform* wfm[], Int_t n_wfm_used){
 
-  // waveform *templ = new waveform();//creates empty templates waveform
-  Int_t n_sample = wfm[0]->GetNsample();//all waveform are equal with same number of sample
-  cout << "prova template " << endl;
-  cout << "n_sample in template " << n_sample << endl;
-
+  Int_t n_sample = wfm[0]->GetNsample();//all waveform are equal with same number of sample, use wfm[0]
   this->SetNsample(n_sample);//allocates fAmp and fTime
-
-    Double_t *Amp = this->GetAmp();
+  Double_t *Amp = this->GetAmp();
 
   for(Int_t i_wfm = 0; i_wfm < n_wfm_used; i_wfm++){
     
     for(Int_t i_bin = 0; i_bin < n_sample; i_bin++){
 
-      //      cout << "tanti ciao " << endl; 
-      Amp[i_bin] += wfm[i_wfm]->GetAmpAt(i_bin)/n_wfm_used;
+        Amp[i_bin] += wfm[i_wfm]->GetAmpAt(i_bin)/n_wfm_used;
     }
   }
 
@@ -266,42 +249,35 @@ waveform* waveform::MakeTemplate(waveform* wfm[], Int_t n_wfm_used){
   return this;
 }
 
-//-------------------------------------------------------------------------------------------------------------//
 
+//-------------------------------------------------------------------------------------------------------------//
+//Return convolution between wfm and a kernel wfm (usually a template wfm)
+//Convolution wfm has double entries as wfm/kernel ones
 waveform* waveform::Convolution(waveform* wfm, waveform* kernel){
 
   Int_t n_sample = wfm->GetNsample();
   Double_t t_min = wfm->GetTimeMin();
   Double_t t_max = wfm->GetTimeMax();
-  cout << "time min alla conv " << t_min << " time max alla conv " << t_max << endl;
-
 
   this->SetNsample(n_sample*2);
   Double_t temp_value = 0.;
 
   for(Int_t i_bin_conv = 0; i_bin_conv< 2*n_sample-1; i_bin_conv++)
       {
-	//i1=i;
 	temp_value=0.0;
+	
 	for(Int_t j_bin = 0; j_bin < n_sample; j_bin++)
 	  {
 	    if((i_bin_conv - j_bin) >=0 && (i_bin_conv - j_bin) < n_sample)
 	     
 	      temp_value = temp_value + kernel->GetAmpAt(i_bin_conv - j_bin) * wfm->GetAmpAt(j_bin);
-	    
+        
 	  }
 
 	this->SetAmpAt(temp_value, i_bin_conv);
-	//	cout << "bin number " << i_bin_conv << "temp value alla conv " << temp_value << endl;
+	
       }
   
   this->SetTime(t_min, t_max*2);
-  
-  
-  for(Int_t iSample = 0; iSample < fNsample; iSample++){
-    
-    cout << "tempo al Graph from wfm " << fTime[iSample] << endl;
-  }
-  
   return this;
 }
