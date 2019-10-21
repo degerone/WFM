@@ -251,15 +251,16 @@ waveform* waveform::MakeTemplate(waveform* wfm[], Int_t n_wfm_used){
 
 
 //-------------------------------------------------------------------------------------------------------------//
-//Return convolution between wfm and a kernel wfm (usually a template wfm)
-//Convolution wfm has double entries as wfm/kernel ones
-waveform* waveform::Convolution(waveform* wfm, waveform* kernel){
+//Return filtered waveform (convolution) between this wfm adn a kernel one (usually a template waveform)
+//Convolution wfm has double entries as this / kernel ones
+waveform* waveform::Convolution(waveform* kernel){
 
-  Int_t n_sample = wfm->GetNsample();
-  Double_t t_min = wfm->GetTimeMin();
-  Double_t t_max = wfm->GetTimeMax();
+  waveform *conv = new waveform();
+  Int_t n_sample = this->GetNsample();
+  Double_t t_min = this->GetTimeMin();
+  Double_t t_max = this->GetTimeMax();
 
-  this->SetNsample(n_sample*2);
+  conv->SetNsample(n_sample*2);
   Double_t temp_value = 0.;
 
   for(Int_t i_bin_conv = 0; i_bin_conv< 2*n_sample-1; i_bin_conv++)
@@ -268,16 +269,12 @@ waveform* waveform::Convolution(waveform* wfm, waveform* kernel){
 	
 	for(Int_t j_bin = 0; j_bin < n_sample; j_bin++)
 	  {
-	    if((i_bin_conv - j_bin) >=0 && (i_bin_conv - j_bin) < n_sample)
-	     
-	      temp_value = temp_value + kernel->GetAmpAt(i_bin_conv - j_bin) * wfm->GetAmpAt(j_bin);
-        
+	    if((i_bin_conv - j_bin) >=0 && (i_bin_conv - j_bin) < n_sample)	     
+	      temp_value = temp_value + kernel->GetAmpAt(i_bin_conv - j_bin) * this->GetAmpAt(j_bin);
 	  }
-
-	this->SetAmpAt(temp_value, i_bin_conv);
-	
+	conv->SetAmpAt(temp_value, i_bin_conv);
       }
   
-  this->SetTime(t_min, t_max*2);
-  return this;
+  conv->SetTime(t_min, t_max*2);
+  return conv;
 }

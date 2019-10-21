@@ -50,22 +50,26 @@ int main(int n, char* argv[]) {
   Int_t n_wfm =10;      //number of waveform to be acquired
   waveform *wfm[n_wfm]; //wfm array creation
   waveform *inverted[n_wfm];//inverted wfm array creation
+  waveform *temp = new waveform();//template waveform creation
+  waveform *conv[n_wfm];
 
   //Root file with raw data (waveform histograms from DAQ file)
   TFile* in_file= TFile::Open(argv[1]);
   TFile f(argv[2],"recreate");
 
   //Boolean variables to activate debugging outputs
-  bool check_wfm_name = true;  
-  bool check_time = true; 
-  bool check_find_bin = true;
-  bool check_baseline_bin = true;
-  bool check_baseline_time = true;
-  bool check_set_amp = true;
-  bool check_graph_from_wfm = true;
-  bool check_invert = false;
-  bool check_fit = true; //need check_invert = true
-
+  Bool_t check_wfm_name = true;  
+  Bool_t check_time = true; 
+  Bool_t check_find_bin = true;
+  Bool_t check_baseline_bin = true;
+  Bool_t check_baseline_time = true;
+  Bool_t check_set_amp = true;
+  Bool_t check_graph_from_wfm = true;
+  Bool_t check_invert = true;
+  Bool_t check_fit = true; //need check_invert = true
+  Bool_t check_template = true;
+  Bool_t check_filter = true;
+ 
   //Waveform acquisition from histograms
   //wfm name is defined by DAQ file 
   if(check_wfm_name)
@@ -228,84 +232,52 @@ int main(int n, char* argv[]) {
 	      string name_fit = "graph_fit_inv_wfm_" + z.str();
 	      char name_fit_c[name_fit.size()+1];
 	      strcpy(name_fit_c, name_fit.c_str());
-	      TGraph *g = new TGraph();
-	      g = inverted[wfm_id]->GetGraph();
-	      g->SetName(name_fit_c);
-	      g->SetTitle(name_fit_c);
-	      g->Write();
+	      //TGraph *g = new TGraph();
+	      g_fit = inverted[wfm_id]->GetGraph();
+	      g_fit->SetName(name_fit_c);
+	      g_fit->SetTitle(name_fit_c);
+	      g_fit->Write();
 	    }
 	}  
     }
   
+  
+  if(check_template)
+    {
+      cout << "check template is activated! You should find a template wfm in output file! " << endl;
+      temp->MakeTemplate(inverted,5);
+      TGraph *g_temp = new TGraph();
+
+      g_temp = temp->Graph_from_wfm();
+      g_temp->SetName("graph_template");
+
+      g_temp->Write();
+    }
+  
 
 
-  // waveform* base = new waveform();
-
-  //waveform *temp = base->MakeTemplate(wfm,2);
-
-  /*  
-  waveform *temp = new waveform();
-  temp->MakeTemplate(wfm,5);
-
-//      temp->MakeTemplate(wfm, 2);
-      
-      Double_t *amp_templ = temp->GetAmp();
-      Int_t bin_templ = temp->GetNsample();
-      cout << "bin_templ " << bin_templ << endl;
-
-      TH1D *h = new TH1D("h", "h", bin_templ, 0, bin_templ);
-
-      for(Int_t i_bin = 0; i_bin < bin_templ; i_bin ++){
-
-	h->SetBinContent(i_bin, amp_templ[i_bin]);
-
-      }
-
-      h->Write();
-  */
-
-  /*  
-      waveform *conv = new waveform();
-      conv->Convolution(wfm[0],temp);
-      cout << "check time min " << wfm[0]->GetTimeMin() << " check time max " << wfm[0]->GetTimeMax() << endl;
-
-      //      cout << "prova conv : fNsample " << conv->GetNsample() << endl;
-      Double_t *amp_conv;
-      amp_conv = conv->GetAmp();
-      
-      for(Int_t i_conv = 0; i_conv < conv->GetNsample(); i_conv++){
-
-	cout << "ampiezza conv " << amp_conv[i_conv] << endl;
-      }
-      
-      TGraph *grafico = new TGraph("test");
-      grafico = conv->Graph_from_wfm();
-      grafico->Write();
-
-      TH1D *h2 = new TH1D("h2", "h2", conv->GetNsample(), 0, conv->GetNsample());
-*/
-
-
-  /*
-      for(Int_t i_bin = 0; i_bin < conv->GetNsample(); i_bin ++){
-
-	h2->SetBinContent(i_bin, conv->GetAmpAt(i_bin));
-
-      }
-
-      h2->Write();
-  */
-
-
-      //      temp->Fit(p);
-      cout << "TEST 2" << endl;
-      //histo->Write();
-      //histo->Delete();
-      //cout << "TEST 3" << endl;
-      //delete [] amp;
-      //delete[] time;
-      cout << "TEST 3" << endl;
-      // }      
+  if(check_filter)
+    {
+      if((check_invert == false) || (check_template == false))
+	cout << "Check inverted/template is false! Inverted wfms / template are not created -> filter is skipped!" << endl;
+      else
+	{
+	  for(Int_t wfm_id = 0; wfm_id < 10; wfm_id++)
+	    {
+	      conv[wfm_id] = inverted[wfm_id]->Convolution(temp);
+	      TGraph *g_conv = new TGraph();
+	      stringstream z;
+	      z << wfm_id;
+	      string name_conv = "graph_conv_inv_wfm_" + z.str();
+	      char name_conv_c[name_conv.size()+1];
+	      strcpy(name_conv_c, name_conv.c_str());
+	      g_conv = conv[wfm_id]->Graph_from_wfm();
+	      g_conv->SetName(name_conv_c);
+	      g_conv->SetTitle(name_conv_c);
+	      g_conv->Write();
+	    }
+	}
+    }
   
   f.Write();  
   return 0;

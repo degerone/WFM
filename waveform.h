@@ -41,7 +41,6 @@ class waveform {
   TGraph *Graph_from_wfm();
   waveform *Invert_wfm();
   waveform* MakeTemplate(waveform  *wfm[], Int_t n_wfm_used);
-  waveform* Convolution(waveform* wfm, waveform* kernel);
-
+  waveform* Convolution(waveform* kernel);
 
 };
