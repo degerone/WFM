@@ -7,21 +7,21 @@ g++ test.cpp waveform.cpp `root-config --cflags --glibs` -o test
 
 esecuzione:
 
-./ANAL ThXXX.root output.root
+./test ThXXX.root output.root
 
 DA IMPLEMENTARE:
 
 - variabili implementate in versione precedente: 
-  - baseline
+  X baseline
   - baseline rms
   - integrale
   - amplitude
-  - get max
-  - get min
-  - template
-  - fit
+  X get max
+  X get min
+  X template
+  ? fit
   - integrale del fit
-  - convolution / filtering
+  X convolution / filtering
   - macro per analisi generica
   - macro per visualizzazione
   - saturazione
