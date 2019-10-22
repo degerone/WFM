@@ -1,3 +1,4 @@
+
 #include <Riostream.h>
 
 #include <TH1.h>
@@ -148,7 +149,7 @@ waveform* waveform::Invert_wfm(){
 
 
 //-------------------------------------------------------------------------------------------------------------//
-//Return the maximum and the corresponding bin of the current waveform calculated in the range (tmin, tmax)
+//Calculate the maximum and the corresponding bin of the current waveform calculated in the range (tmin, tmax)
 void waveform::GetMaximum(Double_t &max, Int_t &max_bin, Double_t tmin, Double_t tmax){
 
   Int_t start_bin;
@@ -163,9 +164,42 @@ void waveform::GetMaximum(Double_t &max, Int_t &max_bin, Double_t tmin, Double_t
 
 }
 
+//-------------------------------------------------------------------------------------------------------------//
+//Return the maximum of the current waveform calculated in the range (tmin, tmax)
+Double_t waveform::GetMaximum(Double_t tmin, Double_t tmax){
+
+  Double_t max =0.;
+  Int_t start_bin;
+  Int_t end_bin;
+
+  start_bin = FindBin(tmin);
+  end_bin = FindBin(tmax);
+
+  Double_t *pointer_to_max = max_element(fAmp + start_bin, fAmp + end_bin);
+  max = *pointer_to_max;
+  //  max_bin = pointer_to_max - fAmp;
+  return max;
+}
 
 //-------------------------------------------------------------------------------------------------------------//
-//Return the minimum and the corresponding bin if the current waveform calculated in the range (tmimn, tmax)
+//Return the maximum of the current waveform calculated in the range (tmin, tmax)
+Int_t waveform::GetMaximumBin(Double_t tmin, Double_t tmax){
+
+  Int_t max_bin =0.;
+  Int_t start_bin;
+  Int_t end_bin;
+
+  start_bin = FindBin(tmin);
+  end_bin = FindBin(tmax);
+
+  Double_t *pointer_to_max = max_element(fAmp + start_bin, fAmp + end_bin);
+  //max = *pointer_to_max;
+  max_bin = pointer_to_max - fAmp;
+  return max_bin;
+}
+
+//-------------------------------------------------------------------------------------------------------------//
+//Calculate the minimum and the corresponding bin if the current waveform calculated in the range (tmimn, tmax)
 void waveform::GetMinimum(Double_t &min, Int_t &min_bin, Double_t tmin, Double_t tmax){
 
   Int_t start_bin;
@@ -178,6 +212,41 @@ void waveform::GetMinimum(Double_t &min, Int_t &min_bin, Double_t tmin, Double_t
   min = *pointer_to_min;
   min_bin = pointer_to_min - fAmp;
 
+}
+
+
+//-------------------------------------------------------------------------------------------------------------//
+//Return the minimum and the corresponding bin if the current waveform calculated in the range (tmimn, tmax)
+Double_t waveform::GetMinimum(Double_t tmin, Double_t tmax){
+
+  Double_t min=0.;
+  Int_t start_bin;
+  Int_t end_bin;
+
+  start_bin = FindBin(tmin);
+  end_bin = FindBin(tmax);
+
+  Double_t *pointer_to_min = min_element(fAmp + start_bin, fAmp + end_bin);
+  min = *pointer_to_min;
+  //min_bin = pointer_to_min - fAmp;
+  return min;
+}
+
+//-------------------------------------------------------------------------------------------------------------//
+//Return the minimum and the corresponding bin if the current waveform calculated in the range (tmimn, tmax)
+Int_t waveform::GetMinimumBin(Double_t tmin, Double_t tmax){
+
+  Int_t min_bin=0.;
+  Int_t start_bin;
+  Int_t end_bin;
+
+  start_bin = FindBin(tmin);
+  end_bin = FindBin(tmax);
+
+  Double_t *pointer_to_min = min_element(fAmp + start_bin, fAmp + end_bin);
+  //min = *pointer_to_min;
+  min_bin = pointer_to_min - fAmp;
+  return min_bin;
 }
 
 
@@ -195,24 +264,23 @@ void waveform::Fit(TF1 *func){
   this->GetMaximum(max, max_bin, fTimeMin, fTimeMax);
   Double_t time_max = GetTimeAt(max_bin);
 
-  //  cout<< "fNsample " << fNsample << endl;
-  //  cout << "fNsamplingInterval : " << fSamplingInterval << endl;
-  //  cout << "time max nella funzione di fit : " << time_max << endl;
-
   func->SetParLimits(0,time_max - 2e-5, time_max);
-  func->SetParLimits(1,0,5.);
-  func->SetParLimits(2,0,1e-4);
-  func->SetParLimits(3,0,1e-4);
+  func->SetParLimits(1,0,10.);
+  func->SetParLimits(2,0,0.8e-4);
+  func->SetParLimits(3,0,0.8e-4);
 
   func->SetParameter(0, time_max - 3e-6);
   func->SetParameter(1, max);
-  func->SetParameter(2, 2e-6);
-  func->SetParameter(3, 3e-5);
+  func->SetParameter(2, 2e-5);
+  func->SetParameter(3, 3e-6);
 
-  fGraph->Fit(func, "WRM", 0, fTimeMax/2);
+  fGraph->Fit(func, "WRM","" , 0, 1e-4);
 
 }
 
+//-------------------------------------------------------------------------------------------------------------//
+//Fit the current waveform. Currently with a 2 exp function (1 exp for rise and 1 exp for decay)
+//STILL TO BE IMPROVED!!
 void waveform::Fit(TF1 *func, Option_t *opt){
 
   if(!fGraph) 
@@ -224,21 +292,17 @@ void waveform::Fit(TF1 *func, Option_t *opt){
   this->GetMaximum(max, max_bin, fTimeMin, fTimeMax);
   Double_t time_max = GetTimeAt(max_bin);
 
-  //  cout<< "fNsample " << fNsample << endl;
-  //  cout << "fNsamplingInterval : " << fSamplingInterval << endl;
-  //  cout << "time max nella funzione di fit : " << time_max << endl;
-
-  func->SetParLimits(0,time_max - 2e-5, time_max);
-  func->SetParLimits(1,0,5.);
-  func->SetParLimits(2,0,1e-4);
-  func->SetParLimits(3,0,1e-4);
+  func->SetParLimits(0,time_max - 1e-5, time_max);
+  func->SetParLimits(1,0,15.);
+  func->SetParLimits(2,0,0.8e-4);
+  func->SetParLimits(3,0,0.8e-4);
 
   func->SetParameter(0, time_max - 3e-6);
   func->SetParameter(1, max);
-  func->SetParameter(2, 2e-6);
-  func->SetParameter(3, 3e-5);
+  func->SetParameter(2, 2e-5);
+  func->SetParameter(3, 3e-6);
 
-  fGraph->Fit(func, opt, 0, fTimeMax/2);
+  fGraph->Fit(func, opt, "", 2e-5, 1e-4);
 
 }
 

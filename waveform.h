@@ -31,9 +31,12 @@ class waveform {
   Double_t GetTimeMax() const{return fTimeMax;}
   Double_t GetTimeAt(Int_t sample);
   TGraph *GetGraph() {return fGraph;}
-  void GetMaximum(Double_t &max, Int_t &max_bin, Double_t tmin, Double_t tmax);
-  void GetMinimum(Double_t &min, Int_t &min_bin, Double_t tmin, Double_t tmax);
-
+  void GetMaximum(Double_t &max, Int_t &max_bin, Double_t tmin, Double_t tmax);//calcola anche il maxbin
+  Double_t GetMaximum(Double_t tmin, Double_t tmax);
+  Int_t GetMaximumBin(Double_t tmin, Double_t tmax);
+  void GetMinimum(Double_t &min, Int_t &min_bin, Double_t tmin, Double_t tmax);//calcola anche il minbin
+  Double_t GetMinimum(Double_t tmin, Double_t tmax);
+  Int_t GetMinimumBin(Double_t tmin, Double_t tmax);
   Int_t FindBin(Double_t time);
   Double_t CalculateBaselineBin(Double_t start_bin, Double_t end_bin);
   Double_t CalculateBaseline(Double_t t_start, Double_t t_end);

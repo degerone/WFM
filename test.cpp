@@ -222,7 +222,10 @@ int main(int n, char* argv[]) {
 	      inverted[wfm_id]->GetMinimum(min, min_bin, tmin, tmax);
 
 	      cout << "Wfm id: " << wfm_id << " has a maximum " << max << " in bin: " << max_bin << endl; 
+	      cout << "wfm id: " << wfm_id << " has a maximum " << inverted[wfm_id]->GetMaximum(tmin,tmax) << " in bin : " << inverted[wfm_id]->GetMaximumBin(tmin, tmax) << endl;
+
 	      cout << "Wfm id: " << wfm_id << " has a minimum " << min << " in bin: " << min_bin << endl;     
+cout << "wfm id: " << wfm_id << " has a minimum " << inverted[wfm_id]->GetMinimum(tmin,tmax) << " in bin : " << inverted[wfm_id]->GetMinimumBin(tmin, tmax) << endl;
 	      //inverted[wfm_id]->Fit(func);
 	      inverted[wfm_id]->Fit(func, "WRMQ");
 	      TGraph *g_fit = new TGraph();
@@ -231,7 +234,6 @@ int main(int n, char* argv[]) {
 	      string name_fit = "graph_fit_inv_wfm_" + z.str();
 	      char name_fit_c[name_fit.size()+1];
 	      strcpy(name_fit_c, name_fit.c_str());
-	      //TGraph *g = new TGraph();
 	      g_fit = inverted[wfm_id]->GetGraph();
 	      g_fit->SetName(name_fit_c);
 	      g_fit->SetTitle(name_fit_c);
