@@ -182,7 +182,7 @@ Double_t waveform::GetMaximum(Double_t tmin, Double_t tmax){
 }
 
 //-------------------------------------------------------------------------------------------------------------//
-//Return the maximum of the current waveform calculated in the range (tmin, tmax)
+//Return the maximum bin of the current waveform calculated in the range (tmin, tmax)
 Int_t waveform::GetMaximumBin(Double_t tmin, Double_t tmax){
 
   Int_t max_bin =0.;
@@ -216,7 +216,7 @@ void waveform::GetMinimum(Double_t &min, Int_t &min_bin, Double_t tmin, Double_t
 
 
 //-------------------------------------------------------------------------------------------------------------//
-//Return the minimum and the corresponding bin if the current waveform calculated in the range (tmimn, tmax)
+//Return the minimum of the current waveform calculated in the range (tmimn, tmax)
 Double_t waveform::GetMinimum(Double_t tmin, Double_t tmax){
 
   Double_t min=0.;
@@ -233,7 +233,7 @@ Double_t waveform::GetMinimum(Double_t tmin, Double_t tmax){
 }
 
 //-------------------------------------------------------------------------------------------------------------//
-//Return the minimum and the corresponding bin if the current waveform calculated in the range (tmimn, tmax)
+//Return the minimum bin of the current waveform calculated in the range (tmimn, tmax)
 Int_t waveform::GetMinimumBin(Double_t tmin, Double_t tmax){
 
   Int_t min_bin=0.;
