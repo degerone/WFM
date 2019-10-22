@@ -63,7 +63,7 @@ double v_integral_mod;
 
 
   //number of wfm to be acquired - should not be hardocded...
-  Int_t n_wfm = 100;
+  Int_t n_wfm = 12000;
   //Waveform array
   waveform *wfm[n_wfm];
   waveform *invert_wfm[n_wfm];
