@@ -101,12 +101,11 @@ Double_t waveform::CalculateBaselineBin(Double_t start_bin, Double_t end_bin){
   Double_t baseline = 0.;
   Int_t n_bin = end_bin - start_bin;
   if(n_bin < 0) return 0;
-  for(Int_t i_bin = 0; i_bin < n_bin; i_bin++){
-
-    baseline += fAmp[i_bin];
-
-  }
-
+  for(Int_t i_bin = 0; i_bin < n_bin; i_bin++)
+    { 
+      baseline += fAmp[i_bin]; 
+    }
+  
   baseline /= n_bin;
   return baseline;
 }
@@ -116,10 +115,12 @@ Double_t waveform::CalculateBaselineBin(Double_t start_bin, Double_t end_bin){
 //Return baseline calculated from t_start to t_end
 Double_t waveform::CalculateBaseline(Double_t t_start, Double_t t_end){
 
-  //  Double_t baseline = 0.;
+  Double_t baseline_time = 0.;
   Double_t bin_start = this->FindBin(t_start);
+
   Double_t bin_end = this->FindBin(t_end);
-  Double_t baseline_time = this->CalculateBaselineBin(bin_start, bin_end);
+
+  baseline_time = this->CalculateBaselineBin(bin_start, bin_end);
   return baseline_time;
 
 }
@@ -128,22 +129,22 @@ Double_t waveform::CalculateBaseline(Double_t t_start, Double_t t_end){
 //-------------------------------------------------------------------------------------------------------------//
 //Return inverted wfm: fAmp[i] -> -fAmp[i]
 waveform* waveform::Invert_wfm(){
-
+  
   waveform *inverted = new waveform();
   Int_t n_sample = this->GetNsample();
   inverted->SetNsample(n_sample);
   
-  for(Int_t i_bin = 0; i_bin<fNsample; i_bin++){
-
-    Double_t amplitude = this->GetAmpAt(i_bin);
-    inverted->SetAmpAt(-amplitude, i_bin);
-
-  }
- 
+  for(Int_t i_bin = 0; i_bin<fNsample; i_bin++)
+    {
+      
+      Double_t amplitude = this->GetAmpAt(i_bin);
+      inverted->SetAmpAt(-amplitude, i_bin);
+    }
+  
   Double_t time_min = this->GetTimeMin();
   Double_t time_max = this->GetTimeMax();
   inverted->SetTime(time_min, time_max);
-
+  
   return inverted;
 }
 
