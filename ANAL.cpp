@@ -71,15 +71,35 @@ double v_integral_mod;
   TBranch *b_issaturated = tree->Branch("b_issaturated", &v_issaturated, "v_issaturated/B");
   TBranch *b_conv = tree->Branch("b_conv", &v_conv, "v_conv/D");
   */
-
-
+  
+  //following lines allow to count histograms in source file, this will be n_wfm 
+  //comment and set n_wfm by hand if you want to set n_wfm to different number
+  TKey *key;
+  Int_t n_wfm = 0;
+  TIter next((TList *)in_file->GetListOfKeys());
+  while((key = (TKey *)next()))
+    {
+      TClass *cl = gROOT->GetClass(key->GetClassName());
+      if(cl->InheritsFrom("TH1"))
+	{
+	  TH1 *h = (TH1 *)key->ReadObj(); 
+	  cout << "Histo found: " << h->GetName() << " - " << h->GetTitle() << endl;
+	  n_wfm++;
+	}
+    }
+  cout << "Found " << n_wfm << " wfm in file " << argv[1] << endl;
+  
   //number of wfm to be acquired - should not be hardocded...
-  Int_t n_wfm = 10000;
+  //Int_t n_wfm = 1000;
   //Waveform array
   waveform *wfm[n_wfm];            //waveform array
   waveform *invert_wfm[n_wfm];     //inverted waveform array
   waveform *temp = new waveform(); //template waveform
   waveform *conv[n_wfm];           //convoluted wfm array
+
+
+
+
 
   //Waveform acquisition from histograms
   for(int wfm_id=0; wfm_id<n_wfm; wfm_id++)
