@@ -368,7 +368,7 @@ waveform* waveform::Convolution(waveform* kernel){
 	  }
 	conv->SetAmpAt(temp_value, i_bin_conv);
       }
-  
+
   conv->SetTime(t_min, t_max*2);
   return conv;
 }

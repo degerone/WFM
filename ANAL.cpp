@@ -3,16 +3,20 @@
 #include <string>
 #include <sstream>
 
-#include <TApplication.h>
+
 #include <TH1.h>
 #include <TF1.h>
-#include <TCanvas.h>
 #include <TFile.h>
 #include <TTree.h>
-#include <TSystem.h>
-#include <TPad.h>
-#include <TChain.h>
-#include <TCanvas.h>
+#include <TGraph.h>
+//#include <TApplication.h>
+//#include <TCanvas.h>
+//#include <TSystem.h>
+//#include <TPad.h>
+//#include <TChain.h>
+//#include <TCanvas.h>
+//#include <TIterator.h>
+//#include <TKey.h>
 
 #include "waveform.h"
 
@@ -20,6 +24,9 @@ using namespace std;
 
 Int_t main(Int_t n, Char_t* argv[]) {
 
+  //Root file with raw data (waveform histograms from DAQ.cpp)
+  TFile* in_file= TFile::Open(argv[1]);
+  TFile f(argv[2],"recreate");
 
   cout << "\nAcquisisco waveform da file  "<< argv[1] << endl;
   cout << "\nSalvo dati in file " <<  argv[2] << endl;
@@ -31,8 +38,11 @@ Int_t main(Int_t n, Char_t* argv[]) {
   Double_t v_baseline;
   Double_t v_maximum;
   Double_t v_amplitude;//maximum - baseline
+  Double_t v_conv_maximum;
   //  double v_integral;  
   
+  Bool_t draw_conv = false; //on/off convolution waveform saving on root file
+
   /*
 double v_integral_mod;
   double v_baseline_RMS;
@@ -50,6 +60,7 @@ double v_integral_mod;
   TBranch *b_baseline = tree->Branch("b_baseline", &v_baseline, "v_baseline/D");  
   TBranch *b_maximum = tree->Branch("b_maximum", &v_maximum, "v_maximum/D");  
   TBranch *b_amplitude = tree->Branch("b_amplitude", &v_amplitude, "v_amplitude/D");  
+  TBranch *b_conv_maximum = tree->Branch("b_conv_maximum", &v_conv_maximum, "v_conv_maximum/D");  
   
 /*
   TBranch *b_baseline_RMS = tree->Branch("b_baseline_RMS", &v_baseline_RMS, "v_baseline_RMS/D");    
@@ -63,13 +74,12 @@ double v_integral_mod;
 
 
   //number of wfm to be acquired - should not be hardocded...
-  Int_t n_wfm = 12000;
+  Int_t n_wfm = 10000;
   //Waveform array
-  waveform *wfm[n_wfm];
-  waveform *invert_wfm[n_wfm];
-
-  //Root file with raw data (waveform histograms from DAQ.cpp)
-  TFile* in_file= TFile::Open(argv[1]);
+  waveform *wfm[n_wfm];            //waveform array
+  waveform *invert_wfm[n_wfm];     //inverted waveform array
+  waveform *temp = new waveform(); //template waveform
+  waveform *conv[n_wfm];           //convoluted wfm array
 
   //Waveform acquisition from histograms
   for(int wfm_id=0; wfm_id<n_wfm; wfm_id++)
@@ -84,21 +94,42 @@ double v_integral_mod;
 
   Double_t t_min = wfm[1]->GetTimeMin();//t_min and t_max are supposed to be the same for all the waveform
   Double_t t_max = wfm[1]->GetTimeMax();
+  Double_t t_max_conv = 2*t_max; //convolution domain is twice the original wfm
+
+  //template creation for optimum filtering
+  temp->MakeTemplate(invert_wfm,50);
+  TGraph *g_template = new TGraph();
+  g_template = temp->Graph_from_wfm();
+  g_template->SetName("template_wfm");
+  g_template->SetTitle("template_wfm");
+  g_template->Write();
 
   for(Int_t wfm_id=0; wfm_id<n_wfm; wfm_id++)
     {
       v_baseline = wfm[wfm_id]->CalculateBaseline(0,4e-5);
       v_maximum = invert_wfm[wfm_id]->GetMaximum(t_min, t_max);
       v_amplitude = v_maximum - v_baseline;
+      conv[wfm_id] = invert_wfm[wfm_id]->Convolution(temp);
+      if(draw_conv)
+	{
+	  TGraph *g_conv = new TGraph();
+	  stringstream z;
+	  z << wfm_id;
+	  string name_conv = "graph_conv_inv_wfm_" + z.str();
+	  char name_conv_c[name_conv.size()+1];
+	  strcpy(name_conv_c, name_conv.c_str());
+	  g_conv = conv[wfm_id]->Graph_from_wfm();
+	  g_conv->SetName(name_conv_c);
+	  g_conv->SetTitle(name_conv_c);
+	  g_conv->Write();
+	}
+      v_conv_maximum = conv[wfm_id]->GetMaximum(t_min, t_max_conv);
       tree->Fill();
-      if(wfm_id%10==0)
-	cout << "Analized event number: " << wfm_id << endl;
     }
   
   in_file->Close();
-  TFile f(argv[2],"recreate");
   tree->Print();
-  tree->Write();
+  //tree->Write();
   f.Write();
   return 0;
   
