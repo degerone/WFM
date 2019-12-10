@@ -22,6 +22,20 @@
 
 using namespace std;
 
+//Fitting function with exp(rise) + exp(decay) function
+//currently baseline is fixed to 0
+//from code by M. Biasotti
+Double_t Pfnc(Double_t *x, Double_t *par){
+
+  Double_t out = 0.;
+  if(x[0]<par[0])
+    out = 0.;
+  else
+    out = par[1]*(exp((-x[0]+par[0])/par[2])-exp((-x[0]+par[0])/par[3]));
+  return out;
+
+}
+
 Int_t main(Int_t n, Char_t* argv[]) {
 
   //Root file with raw data (waveform histograms from DAQ.cpp)
@@ -39,28 +53,33 @@ Int_t main(Int_t n, Char_t* argv[]) {
   Double_t v_maximum;
   Double_t v_amplitude;//maximum - baseline
   Double_t v_conv_maximum;
+  Double_t v_decay;//decay time from fit
+  Double_t v_rise;//rise time from fit
+
   //  double v_integral;  
   
   Bool_t draw_conv = false; //on/off convolution waveform saving on root file
 
   /*
-double v_integral_mod;
-  double v_baseline_RMS;
-  double v_decay_time;
-  double v_pulse_amplitude;
-  double v_risetime;
-  double v_chi2;
-  double v_conv;
-  double v_max;
-  bool v_issaturated;
+    double v_integral_mod;
+    double v_baseline_RMS;
+    double v_decay_time;
+    double v_pulse_amplitude;
+    double v_risetime;
+    double v_chi2;
+    double v_conv;
+    double v_max;
+    bool v_issaturated;
   */
-
+  
 
   //Branch definition
   TBranch *b_baseline = tree->Branch("b_baseline", &v_baseline, "v_baseline/D");  
   TBranch *b_maximum = tree->Branch("b_maximum", &v_maximum, "v_maximum/D");  
   TBranch *b_amplitude = tree->Branch("b_amplitude", &v_amplitude, "v_amplitude/D");  
   TBranch *b_conv_maximum = tree->Branch("b_conv_maximum", &v_conv_maximum, "v_conv_maximum/D");  
+  TBranch *b_decay = tree->Branch("b_decay", &v_decay, "v_decay/D");
+  TBranch *b_rise = tree->Branch("b_rise", &v_rise, "v_rise/D");
   
 /*
   TBranch *b_baseline_RMS = tree->Branch("b_baseline_RMS", &v_baseline_RMS, "v_baseline_RMS/D");    
@@ -86,7 +105,7 @@ double v_integral_mod;
       if(cl->InheritsFrom("TH1"))
 	{
 	  TH1 *h = (TH1 *)key->ReadObj(); 
-	  cout << "Histo found: " << h->GetName() << " - " << h->GetTitle() << endl;
+	  //cout << "Histo found: " << h->GetName() << " - " << h->GetTitle() << endl;
 	  n_wfm++;
 	}
     }
@@ -121,12 +140,19 @@ double v_integral_mod;
   g_template->SetTitle("template_wfm");
   g_template->Write();
 
+
+
+
+  //Execute tasks and save variables to tree
   for(Int_t wfm_id=0; wfm_id<n_wfm; wfm_id++)
     {
-      v_baseline = wfm[wfm_id]->CalculateBaseline(0,4e-5);
+      v_baseline = invert_wfm[wfm_id]->CalculateBaseline(0,4e-5);
       v_maximum = invert_wfm[wfm_id]->GetMaximum(t_min, t_max);
       v_amplitude = v_maximum - v_baseline;
       conv[wfm_id] = invert_wfm[wfm_id]->Convolution(temp);
+      v_conv_maximum = conv[wfm_id]->GetMaximum(t_min, t_max_conv);
+      
+      //Only to draw convolution to root file
       if(draw_conv)
 	{
 	  TGraph *g_conv = new TGraph();
@@ -140,7 +166,6 @@ double v_integral_mod;
 	  g_conv->SetTitle(name_conv_c);
 	  g_conv->Write();
 	}
-      v_conv_maximum = conv[wfm_id]->GetMaximum(t_min, t_max_conv);
       tree->Fill();
     }
   
