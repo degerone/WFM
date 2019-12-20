@@ -107,7 +107,6 @@ Int_t main(Int_t n, Char_t* argv[]) {
       if(cl->InheritsFrom("TH1"))
 	{
 	  TH1 *h = (TH1 *)key->ReadObj(); 
-	  //cout << "Histo found: " << h->GetName() << " - " << h->GetTitle() << endl;
 	  n_wfm++;
 	}
     }
@@ -157,43 +156,37 @@ Int_t main(Int_t n, Char_t* argv[]) {
       
       //FIT ROUTINE STARTS HERE!
       TF1 *func = new TF1("Pulse", Pfnc, 0, 2e-4, 4);
-      cout << "check Fit, GetMaximum, GetMinimum " << endl;
+      //      cout << "check Fit, GetMaximum, GetMinimum " << endl;
       // for(Int_t wfm_id=0; wfm_id<n_wfm; wfm_id++)
       //{
-	  Double_t tmax = invert_wfm[wfm_id]->GetTimeMax();
-	  Double_t tmin = invert_wfm[wfm_id]->GetTimeMin();
-	  Double_t max, min;
-	  Int_t  max_bin, min_bin;
-
-	  invert_wfm[wfm_id]->GetMaximum(max, max_bin, tmin, tmax);
-	  invert_wfm[wfm_id]->GetMinimum(min, min_bin, tmin, tmax);
-
-	  //cout << "Wfm id: " << wfm_id << " has a maximum " << max << " in bin: " << max_bin << endl;
-	  //cout << "wfm id: " << wfm_id << " has a maximum " << invert_wfm[wfm_id]->GetMaximum(tmin,tmax) << " in bin : " << invert_wfm[wfm_id]->GetMaximumBin(tmin, tmax) << endl;
-	  //cout << "Wfm id: " << wfm_id << " has a minimum " << min << " in bin: " << min_bin << endl;
-	  //cout << "wfm id: " << wfm_id << " has a minimum " << invert_wfm[wfm_id]->GetMinimum(tmin,tmax) << " in bin : " << invert_wfm[wfm_id]->GetMinimumBin(tmin, tmax) << endl;
-	  //inverted[wfm_id]->Fit(func);                                                                                                                      
-	  invert_wfm[wfm_id]->Fit(func, "WRMQ");
-	  //cout << "PROVA PAR 0 " << func->GetParameter(0) << endl; 
-	  //cout << "PROVA PAR 2 " << func->GetParameter(2) << endl;
-	  //cout << "PROVA PAR 3 " << func->GetParameter(3) << endl;
-	  if(draw_fit)
-	    {
-	      TGraph *g_fit = new TGraph();
-	      stringstream z;
-	      z << wfm_id;
-	      string name_fit = "graph_fit_inv_wfm_" + z.str();
-	      char name_fit_c[name_fit.size()+1];
-	      strcpy(name_fit_c, name_fit.c_str());
-	      g_fit = invert_wfm[wfm_id]->GetGraph();
-	      g_fit->SetName(name_fit_c);
-	      g_fit->SetTitle(name_fit_c);
-	      g_fit->Write();
-	    }
-	  //}
-	  //}
-	  v_rise = func->GetParameter(2);
-	  v_decay = func->GetParameter(3);
+      Double_t tmax = invert_wfm[wfm_id]->GetTimeMax();
+      Double_t tmin = invert_wfm[wfm_id]->GetTimeMin();
+      Double_t max, min;
+      Int_t  max_bin, min_bin;
+      
+      invert_wfm[wfm_id]->GetMaximum(max, max_bin, tmin, tmax);
+      invert_wfm[wfm_id]->GetMinimum(min, min_bin, tmin, tmax);
+      invert_wfm[wfm_id]->Fit(func, "WRMQ");
+      //FIT ROUTINE FINISHES HERE!
+      //NOW DRAW (OPTIONAL) AND EXTRACT PARAMETERS
+      if(draw_fit)
+	{
+	  TGraph *g_fit = new TGraph();
+	  stringstream z;
+	  z << wfm_id;
+	  string name_fit = "graph_fit_inv_wfm_" + z.str();
+	  char name_fit_c[name_fit.size()+1];
+	  strcpy(name_fit_c, name_fit.c_str());
+	  g_fit = invert_wfm[wfm_id]->GetGraph();
+	  g_fit->SetName(name_fit_c);
+	  g_fit->SetTitle(name_fit_c);
+	  g_fit->Write();
+	}
+      
+      //CHECK PARAMETERS!
+      v_rise = func->GetParameter(2);
+      v_decay = func->GetParameter(3);
+  
       //Only to draw convolution to root file
       if(draw_conv)
 	{
